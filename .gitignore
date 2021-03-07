@@ -1,0 +1,4 @@
+nyc_data.tar/
+*.tar
+nyc_data
+*target/
