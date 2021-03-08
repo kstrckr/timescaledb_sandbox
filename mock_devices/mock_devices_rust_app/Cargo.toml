@@ -10,3 +10,4 @@ edition = "2018"
 
 sqlx = { version = "0.5", features = [ "postgres", "runtime-async-std-native-tls" ] }
 async-std = { version = "1.6", features = [ "attributes" ] }
+rand = "0.6.5"

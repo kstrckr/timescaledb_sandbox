@@ -19,6 +19,6 @@ services:
     #     limits:
     #       memory: 2048M
 
-  mock-devices:
-    container_name: mockdevices
-    build: ./mock_devices
+  # mock-devices:
+  #   container_name: mockdevices
+  #   build: ./mock_devices
