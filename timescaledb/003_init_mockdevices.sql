@@ -24,7 +24,8 @@
 DROP TABLE IF EXISTS mockDevices;
 CREATE TABLE mockDevices(
   id INTEGER,
-  datapoint_datetime BIGINT
+  datapoint_datetime BIGINT,
+  datapoint_value INTEGER
 );
 SELECT create_hypertable('mockDevices', 'datapoint_datetime', chunk_time_interval => 86400000);
 -- CREATE INDEX ON rides (vendor_id, pickup_datetime desc);
