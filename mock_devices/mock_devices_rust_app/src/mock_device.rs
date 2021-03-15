@@ -3,7 +3,7 @@ use rand::{thread_rng, Rng};
 #[derive(Debug)]
 pub struct MockDevice {
   pub id: u32,
-  pub offset: u128,
+  pub offset: i64,
 }
 
 impl MockDevice {
@@ -14,14 +14,14 @@ impl MockDevice {
     }
   }
 
-  fn new_with_offset(id: u32, offset: u128) -> Self {
+  fn new_with_offset(id: u32, offset: i64) -> Self {
     Self {
       id,
       offset,
     }
   }
 
-  pub fn get_next_data_point(&self, base_time: u128) -> (u64, u128) {
+  pub fn get_next_data_point(&self, base_time: i64) -> (u64, i64) {
     let mut rng = thread_rng();
     let new_timestamp = self.offset + base_time;
     let measurement: u64 = rng.gen_range(0, 500);
@@ -33,7 +33,7 @@ impl MockDevice {
     let mut devices: Vec<MockDevice> = Vec::new();
     let count = count + 1;
     for i in 1..count {
-      let n: u128 = rng.gen_range(0, 300000);
+      let n: i64 = rng.gen_range(0, 300);
       devices.push(MockDevice::new_with_offset(i, n));
     }
     devices

@@ -1,5 +1,8 @@
+extern crate chrono;
+use chrono::prelude::*;
+
+// use sqlx::postgres::PgPoolOptions;
 use std::time::{SystemTime, UNIX_EPOCH};
-use sqlx::postgres::PgPoolOptions;
 use std::env;
 use std::error::Error;
 use std::ffi::OsString;
@@ -18,22 +21,29 @@ fn get_first_arg() -> Result<OsString, Box<dyn Error>> {
 
 
 fn run() -> Result<(), Box<dyn Error>> {
+    let seconds_in_a_month: i64 = 2629800;
+    let fivemin_intervals_in_a_month: i64 = 8766;
     let file_path = get_first_arg()?;
     let mut wtr = csv::Writer::from_path(file_path)?;
-    // wtr.write_record(&["id", "measurement", "timestamp"])?;
     let mock_devices: Vec<MockDevice> = MockDevice::batch_of_mock_devices(1);
 
-    let start = SystemTime::now();
-    let since_epoch = start.duration_since(UNIX_EPOCH).expect("Time went backwards");
+    let now = SystemTime::now();
+    let since_epoch = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
+    let thirty_days_ago_unix_secs: i64 = since_epoch.as_secs() as i64 - seconds_in_a_month;
 
-    for i in 0..8640 {
-        let interval_increment = 30000 * i;
+    for i in 0..fivemin_intervals_in_a_month {
+        let interval_increment = 300 * i;
         for device in &mock_devices {
-            let timestamp = since_epoch.as_millis() - 2629800000 + interval_increment;
-            let measurement: (u64, u128) = device.get_next_data_point(timestamp);
+            let five_min_increment = thirty_days_ago_unix_secs + interval_increment;
+            let measurement: (u64, i64) = device.get_next_data_point(five_min_increment);
+            println!("{}", measurement.1);
             let id_string: String = device.id.to_string(); 
             let measurement_string: String = measurement.0.to_string();
-            let timestamp_string: String = measurement.1.to_string();
+
+            // timestamp ms since epoch to datetime string here
+            let naive_datetime = NaiveDateTime::from_timestamp(measurement.1, 0);
+            let datetime: DateTime<Utc> = DateTime::from_utc(naive_datetime, Utc);
+            let timestamp_string: String = datetime.to_string();
 
             let id_str = &id_string[..];
             let measurement_str = &measurement_string[..];

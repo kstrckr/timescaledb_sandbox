@@ -1,36 +1,13 @@
 version: "3.9"
 services:
-  # timescaledb:
-  #   container_name: timescaledb
-  #   build: ./timescaledb
-  #   environment:
-  #     POSTGRES_PASSWORD: "password"
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - seed-csv:/temp
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 2048M
-
-    seeded_timescaledb:
-      container_name: seeded_timescaledb
-      build: .
-      environment:
-        POSTGRES_PASSWORD: "password"
-      ports:
-        - "5432:5432"
-      # deploy:
-      #   resources:
-      #     limits:
-      #       memory: 2048M
-
-  mock-devices:
-    container_name: mockdevices
-    build: ./mock_devices
-    volumes:
-      - seed-csv:/temp
-
-volumes:
-  seed-csv:
+  seeded_timescaledb:
+    container_name: seeded_timescaledb
+    build: .
+    environment:
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"
+    # deploy:
+    #   resources:
+    #     limits:
+    #       memory: 2048M
