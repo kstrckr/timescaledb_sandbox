@@ -1,16 +1,24 @@
 use rand::{thread_rng, Rng};
+use uuid::Uuid;
 
 #[derive(Debug)]
 pub struct MockDevice {
   pub id: u32,
   pub offset: i64,
+  pub uid: Uuid,
+  pub device_type: String,
+  pub active: bool,
 }
 
 impl MockDevice {
   pub fn new(id: u32) -> Self {
+    let new_uid = Uuid::new_v4();
     Self {
       id,
       offset: 0,
+      uid: new_uid,
+      device_type: "battery".to_string(),
+      active: true,
     }
   }
 
@@ -18,6 +26,9 @@ impl MockDevice {
     Self {
       id,
       offset,
+      uid: Uuid::new_v4(),
+      device_type: "battery".to_string(),
+      active: true,
     }
   }
 

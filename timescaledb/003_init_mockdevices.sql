@@ -1,61 +1,20 @@
--- DROP TABLE IF EXISTS "rides";
-
--- CREATE TABLE "rides"(
---     vendor_id TEXT,
---     pickup_datetime TIMESTAMP WITHOUT TIME ZONE NOT NULL,
---     dropoff_datetime TIMESTAMP WITHOUT TIME ZONE NOT NULL,
---     passenger_count NUMERIC,
---     trip_distance NUMERIC,
---     pickup_longitude  NUMERIC,
---     pickup_latitude   NUMERIC,
---     rate_code         INTEGER,
---     dropoff_longitude NUMERIC,
---     dropoff_latitude  NUMERIC,
---     payment_type INTEGER,
---     fare_amount NUMERIC,
---     extra NUMERIC,
---     mta_tax NUMERIC,
---     tip_amount NUMERIC,
---     tolls_amount NUMERIC,
---     improvement_surcharge NUMERIC,
---     total_amount NUMERIC
--- );
-
-DROP TABLE IF EXISTS mockDevices;
-CREATE TABLE mockDevices(
-  id INTEGER,
-  datapoint_datetime TIMESTAMP NOT NULL,
-  datapoint_value INTEGER
+CREATE TABLE IF NOT EXISTS devices(
+  id INTEGER PRIMARY KEY,
+  uid UUID UNIQUE NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  active BOOLEAN DEFAULT true
 );
-SELECT create_hypertable('mockDevices', 'datapoint_datetime', chunk_time_interval => 86400000);
 
-\COPY mockdevices FROM ./seed_data/seed_data.csv CSV;
+CREATE INDEX ON devices(id);
 
--- CREATE INDEX ON rides (vendor_id, pickup_datetime desc);
--- CREATE INDEX ON rides (pickup_datetime desc, vendor_id);
--- CREATE INDEX ON rides (rate_code, pickup_datetime DESC);
--- CREATE INDEX ON rides (passenger_count, pickup_datetime desc);
-
--- CREATE TABLE IF NOT EXISTS "payment_types"(
---     payment_type INTEGER,
---     description TEXT
--- );
--- INSERT INTO payment_types(payment_type, description) VALUES
--- (1, 'credit card'),
--- (2, 'cash'),
--- (3, 'no charge'),
--- (4, 'dispute'),
--- (5, 'unknown'),
--- (6, 'voided trip');
-
--- CREATE TABLE IF NOT EXISTS "rates"(
---     rate_code   INTEGER,
---     description TEXT
--- );
--- INSERT INTO rates(rate_code, description) VALUES
--- (1, 'standard rate'),
--- (2, 'JFK'),
--- (3, 'Newark'),
--- (4, 'Nassau or Westchester'),
--- (5, 'negotiated fare'),
--- (6, 'group ride');
+CREATE TABLE IF NOT EXISTS device_data(
+  device_id INTEGER NOT NULL,
+  time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  datapoint_value INTEGER NOT NULL,
+  CONSTRAINT fk_id
+    FOREIGN KEY(device_id)
+      REFERENCES devices(id)
+);
+SELECT create_hypertable('device_data', 'time', chunk_time_interval => INTERVAL '1 day');
+CREATE INDEX ON device_data (device_id, time desc);
+CREATE INDEX ON device_data (time desc, device_id);
