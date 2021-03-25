@@ -6,8 +6,20 @@ services:
     environment:
       POSTGRES_PASSWORD: "password"
     ports:
-      - "5432:5432"
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 2048M
+      - 5432:5432
+    networks:
+      - tsdb
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+
+  grafana:
+    image: grafana/grafana:7.3.6
+    ports:
+      - 3000:3000
+    networks:
+      - tsdb
+
+networks:
+  tsdb:

@@ -1,4 +1,5 @@
 Cargo.lock
-target/
+mock_devices/mock_devices_rust_app/target/
+mock_devices/diamond_square_lib/target/
 .git
 *.csv

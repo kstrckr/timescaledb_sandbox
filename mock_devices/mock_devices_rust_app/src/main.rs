@@ -1,4 +1,5 @@
 extern crate chrono;
+
 use chrono::prelude::*;
 use uuid::Uuid;
 
@@ -12,6 +13,7 @@ use std::process;
 mod mock_device;
 
 use mock_device::MockDevice;
+use mock_device::DataPoint;
 
 fn get_first_arg() -> Result<OsString, Box<dyn Error>> {
     match env::args_os().nth(1) {
@@ -28,7 +30,7 @@ fn run() -> Result<(), Box<dyn Error>> {
     let devices_file_name = OsString::from("devices.csv");
     let mut data_wtr = csv::Writer::from_path(data_file_name)?;
     let mut device_wtr = csv::Writer::from_path(devices_file_name)?;
-    let mock_devices: Vec<MockDevice> = MockDevice::batch_of_mock_devices(10000);
+    let mock_devices: Vec<MockDevice> = MockDevice::batch_of_mock_devices(5);
 
     let now = SystemTime::now();
     let since_epoch = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
@@ -48,12 +50,12 @@ fn run() -> Result<(), Box<dyn Error>> {
             for i in 0..fivemin_intervals_in_a_month {
                 let interval_increment = 300 * i;
                 let five_min_increment = thirty_days_ago_unix_secs + interval_increment;
-                let measurement: (u64, i64) = device.get_next_data_point(five_min_increment);
+                let measurement: DataPoint = device.get_next_data_point(five_min_increment, i);
                 let id_string: String = device.id.to_string(); 
-                let measurement_string: String = measurement.0.to_string();
+                let measurement_string: String = measurement.value.to_string();
 
                 // timestamp ms since epoch to datetime string here
-                let naive_datetime = NaiveDateTime::from_timestamp(measurement.1, 0);
+                let naive_datetime = NaiveDateTime::from_timestamp(measurement.timestamp, 0);
                 let datetime: DateTime<Utc> = DateTime::from_utc(naive_datetime, Utc);
                 let timestamp_string: String = datetime.to_string();
 

@@ -1,5 +1,13 @@
+extern crate diamond_square_lib;
+
+use diamond_square_lib::diamond_square;
 use rand::{thread_rng, Rng};
 use uuid::Uuid;
+
+pub struct DataPoint {
+  pub value: u64,
+  pub timestamp: i64,
+}
 
 #[derive(Debug)]
 pub struct MockDevice {
@@ -8,6 +16,7 @@ pub struct MockDevice {
   pub uid: Uuid,
   pub device_type: String,
   pub active: bool,
+  pub mock_data: Vec<u32>,
 }
 
 impl MockDevice {
@@ -19,6 +28,7 @@ impl MockDevice {
       uid: new_uid,
       device_type: "battery".to_string(),
       active: true,
+      mock_data: diamond_square::create_ds(),
     }
   }
 
@@ -29,14 +39,15 @@ impl MockDevice {
       uid: Uuid::new_v4(),
       device_type: "battery".to_string(),
       active: true,
+      mock_data: diamond_square::create_ds(),
     }
   }
 
-  pub fn get_next_data_point(&self, base_time: i64) -> (u64, i64) {
-    let mut rng = thread_rng();
-    let new_timestamp = self.offset + base_time;
-    let measurement: u64 = rng.gen_range(0, 500);
-    (measurement, new_timestamp)
+  pub fn get_next_data_point(&self, base_time: i64, index: i64) -> DataPoint {
+    let timestamp = self.offset + base_time;
+    let value = self.mock_data[index as usize] as u64;
+
+    DataPoint { value, timestamp }
   }
 
   pub fn batch_of_mock_devices(count: u32) -> Vec<MockDevice> {
